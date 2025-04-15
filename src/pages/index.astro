@@ -1,0 +1,9 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProductList from '../components/ProductList.astro';
+---
+
+<Layout title="Shopify Headless Store">
+  <h1>Welcome to the Store</h1>
+  <ProductList server:defer />
+</Layout>

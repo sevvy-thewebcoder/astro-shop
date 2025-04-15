@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Product from '../../components/Product.astro';
+import { getProductByHandle } from '../../shopify/products';
+
+const { handle } = Astro.params;
+const product = await getProductByHandle(handle);
+
+if (!product) {
+  return new Response('Product not found', { status: 404 });
+}
+---
+
+<Layout title={product.title}>
+  <Product product={product} server:defer />
+</Layout>

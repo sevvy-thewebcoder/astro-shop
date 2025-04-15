@@ -1,0 +1,19 @@
+---
+import { Image } from 'astro:assets';
+import { getProducts } from '../shopify/products';
+
+const products = await getProducts();
+---
+
+<ul class="grid grid-cols-3 gap-4">
+    { products ? 
+        products.map((product) => (
+            <li>
+                <a href={`/product/${product.handle}`}>
+                    <Image src={product.featuredImage.url} alt={product.featuredImage.altText || product.title} width={300} height={300} loading="lazy" class='w-full' />
+                    <h2>{product.title}</h2>
+                </a>
+            </li>
+        )) : ( <div>Loading...</div> )
+    }
+</ul>
