@@ -1,0 +1,190 @@
+---
+import { Image } from "astro:assets";
+import { getCart } from "../shopify/cart";
+// import { cartStore } from "../stores/cartStore";
+
+// Server-side - get the cart ID from localStorage on the client
+const cartId = Astro.cookies.get("cartId")?.value;
+let cart = null;
+
+if (cartId) {
+	try {
+		cart = await getCart(cartId);
+	} catch (error) {
+		console.error("Failed to fetch cart:", error);
+	}
+}
+---
+
+<div
+	id="cart-component"
+	class="cart-container hidden fixed right-0 top-0 h-full w-80 bg-white shadow-lg z-50 p-4 overflow-y-auto"
+>
+	<div class="flex justify-between items-center mb-4">
+		<h2 class="text-lg font-bold">Your Cart</h2>
+		<button id="close-cart" class="text-gray-500 hover:text-gray-700">
+			&times;
+		</button>
+	</div>
+
+	<div id="cart-items">
+		{
+			cart && cart.lines.nodes.length > 0 ? (
+				<ul class="space-y-4">
+					{cart.lines.nodes.map((item) => (
+						<li class="flex border-b pb-2">
+							<div class="w-20 h-20 flex-shrink-0">
+								<Image
+									src={item.merchandise.image.url}
+									alt={
+										item.merchandise.image.altText ||
+										item.merchandise.product.title
+									}
+									width={80}
+									height={80}
+									class="object-cover"
+								/>
+							</div>
+							<div class="ml-4 flex-grow">
+								<h3 class="text-sm font-medium">
+									{item.merchandise.product.title}
+								</h3>
+								<p class="text-xs text-gray-500">{item.merchandise.title}</p>
+								<div class="flex justify-between mt-1">
+									<p class="text-sm">
+										{item.cost.amountPerQuantity.currencyCode}{" "}
+										{item.cost.amountPerQuantity.amount}
+									</p>
+									<div class="flex items-center">
+										<span class="text-sm">Qty: {item.quantity}</span>
+										<button
+											class="ml-2 text-xs text-red-500 hover:text-red-700"
+											data-remove-item
+											data-line-id={item.id}
+										>
+											Remove
+										</button>
+									</div>
+								</div>
+							</div>
+						</li>
+					))}
+				</ul>
+			) : (
+				<div class="text-center py-8">
+					<p>Your cart is empty</p>
+					<a href="/" class="block mt-4 text-blue-600 hover:text-blue-800">
+						Continue Shopping
+					</a>
+				</div>
+			)
+		}
+	</div>
+
+	{
+		cart && cart.lines.nodes.length > 0 && (
+			<div class="mt-6">
+				<div class="flex justify-between mb-2">
+					<span>Subtotal</span>
+					<span>
+						{cart.cost.subtotalAmount.currencyCode}{" "}
+						{cart.cost.subtotalAmount.amount}
+					</span>
+				</div>
+				<p class="text-xs text-gray-500 mb-4">
+					Shipping and taxes calculated at checkout
+				</p>
+				<a
+					href={cart.checkoutUrl}
+					class="block w-full bg-blue-600 text-white text-center py-2 rounded hover:bg-blue-700"
+				>
+					Checkout
+				</a>
+			</div>
+		)
+	}
+</div>
+
+<script>
+	import {
+		cartStore,
+		isCartOpen,
+		closeCart,
+		setCart,
+	} from "../stores/cartStore";
+	import { removeFromCart, getCart } from "../shopify/cart";
+
+	// DOM elements
+	const cartComponent = document.getElementById("cart-component");
+	const closeButton = document.getElementById("close-cart");
+	const removeButtons = document.querySelectorAll("[data-remove-item]");
+
+	// Subscribe to cart open state
+	isCartOpen.subscribe((open) => {
+		if (open && cartComponent) {
+			cartComponent.classList.remove("hidden");
+		} else if (cartComponent) {
+			cartComponent.classList.add("hidden");
+		}
+	});
+
+	// Subscribe to cart store to update cart ID cookie
+	cartStore.subscribe((cart) => {
+		if (cart?.id) {
+			document.cookie = `cartId=${cart.id}; path=/; max-age=2592000`; // 30 days
+		}
+	});
+
+	// Event listeners
+	closeButton?.addEventListener("click", () => {
+		closeCart();
+	});
+
+	// Remove item from cart
+	removeButtons.forEach((button) => {
+		button.addEventListener("click", async (e) => {
+			const lineId = button.getAttribute("data-line-id");
+			const cart = cartStore.get();
+
+			if (lineId && cart) {
+				try {
+					await removeFromCart(cart.id, [lineId]);
+
+					// Refresh the cart
+					const updatedCart = await getCart(cart.id);
+					setCart(updatedCart);
+
+					// If this was done without page refresh, we'd update the UI here
+					// But for Astro SSR we'll rely on page refresh
+					window.location.reload();
+				} catch (error) {
+					console.error("Failed to remove item:", error);
+				}
+			}
+		});
+	});
+
+	// Initialize cart from cookie if needed
+	document.addEventListener("DOMContentLoaded", async () => {
+		const cookieCart = getCookie("cartId");
+		const storeCart = cartStore.get();
+
+		if (cookieCart && !storeCart) {
+			try {
+				const cart = await getCart(cookieCart);
+				if (cart) {
+					setCart(cart);
+				}
+			} catch (error) {
+				console.error("Failed to fetch cart from cookie:", error);
+			}
+		}
+	});
+
+	function getCookie(name: string) {
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if (parts.length === 2) return parts.pop()?.split(";")?.shift() ?? null;
+		return null;
+	}
+</script>

@@ -1,0 +1,56 @@
+---
+import { Image } from "astro:assets";
+import heroBannerImage from "../assets/images/hero-banner-home.jpg";
+// TypeScript interface for the component props
+interface Props {
+	title?: string;
+	buttonText?: string;
+	buttonLink?: string;
+	backgroundImage?: ImageMetadata;
+	overlayOpacity?: string;
+}
+
+// Default props
+const {
+	title = "UNBOUND STYLE. UNSHAKEN STRENGTH.",
+	buttonText = "SHOP NOW",
+	buttonLink = "/products",
+	backgroundImage = heroBannerImage,
+	overlayOpacity = "opacity-30", // Tailwind opacity class
+} = Astro.props;
+---
+
+<section class="relative w-full h-screen overflow-hidden">
+	{/* Background Image */}
+	<div class="absolute inset-0 z-0">
+		<Image
+			src={backgroundImage}
+			alt="Fashion models showcasing brand style"
+			width={backgroundImage.width}
+			height={backgroundImage.height}
+			loading="lazy"
+			class="w-full h-full object-cover object-bottom"
+		/>
+		<div class={`absolute inset-0 bg-black ${overlayOpacity}`}></div>
+	</div>
+
+	{/* Content Container */}
+	<div
+		class="relative z-10 flex flex-col items-center justify-center h-full px-4 md:px-8"
+	>
+		{/* Main Headline */}
+		<h1
+			class="text-4xl md:text-6xl lg:text-7xl text-white font-bold text-center mb-8 md:mb-12 tracking-wider max-w-4xl"
+		>
+			{title}
+		</h1>
+
+		{/* Call to Action Button */}
+		<a
+			href={buttonLink}
+			class="bg-white text-black px-12 py-4 uppercase text-sm md:text-base tracking-wider font-medium hover:bg-gray-100 transition-colors duration-300"
+		>
+			{buttonText}
+		</a>
+	</div>
+</section>

@@ -1,9 +1,298 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import ProductList from '../components/ProductList.astro';
+import { Image } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import menCollectionBGImage from "../assets/images/men-collection-bg.jpg";
+import womenCollectionBGImage from "../assets/images/women-collection-bg.jpg";
+import mensJeansBGImage from "../assets/images/men-jeans-bg.jpg";
+import womensJeansBGImage from "../assets/images/women-jeans-bg.jpg";
+
+// TypeScript interfaces for the component
+interface ProductImage {
+	imageUrl: string;
+	alt: string;
+	width: number;
+	height: number;
+	loading?: "lazy" | "eager";
+}
+interface Product {
+	id: string;
+	name: string;
+	brand: string;
+	price: number;
+	image: ProductImage;
+}
+
+interface Props {
+	mensProducts: Product[];
+	womensProducts: Product[];
+}
+
+// Default props with sample data
+const {
+	mensProducts = [
+		{
+			id: "m1",
+			name: "CONAN LEATHER-BLACK",
+			brand: "CONAN LEATHER-BLACK",
+			price: 499.0,
+			image: {
+				imageUrl: "/images/men-collection/image-01.jpg",
+				alt: "CONAN LEATHER-BLACK",
+				width: 300,
+				height: 400,
+				loading: "lazy",
+			},
+		},
+		{
+			id: "m2",
+			name: "CONAN LEATHER-BLACK",
+			brand: "CONAN LEATHER-BLACK",
+			price: 499.0,
+			image: {
+				imageUrl: "/images/men-collection/image-02.jpg",
+				alt: "CONAN LEATHER-BLACK",
+				width: 300,
+				height: 400,
+				loading: "lazy",
+			},
+		},
+		{
+			id: "m3",
+			name: "CONAN LEATHER-BLACK",
+			brand: "CONAN LEATHER-BLACK",
+			price: 499.0,
+			image: {
+				imageUrl: "/images/men-collection/image-03.jpg",
+				alt: "CONAN LEATHER-BLACK",
+				width: 300,
+				height: 400,
+				loading: "lazy",
+			},
+		},
+		{
+			id: "m4",
+			name: "CONAN LEATHER-BLACK",
+			brand: "CONAN LEATHER-BLACK",
+			price: 499.0,
+			image: {
+				imageUrl: "/images/men-collection/image-04.jpg",
+				alt: "CONAN LEATHER-BLACK",
+				width: 300,
+				height: 400,
+				loading: "lazy",
+			},
+		},
+	],
+	womensProducts = [
+		{
+			id: "w1",
+			name: "CONAN LEATHER-BLACK",
+			brand: "CONAN LEATHER-BLACK",
+			price: 499.0,
+			image: {
+				imageUrl: "/images/women-collection/image-01.jpg",
+				alt: "CONAN LEATHER-BLACK",
+				width: 300,
+				height: 400,
+				loading: "lazy",
+			},
+		},
+		{
+			id: "w2",
+			name: "CONAN LEATHER-BLACK",
+			brand: "CONAN LEATHER-BLACK",
+			price: 499.0,
+			image: {
+				imageUrl: "/images/women-collection/image-02.jpg",
+				alt: "CONAN LEATHER-BLACK",
+				width: 300,
+				height: 400,
+				loading: "lazy",
+			},
+		},
+		{
+			id: "w3",
+			name: "CONAN LEATHER-BLACK",
+			brand: "CONAN LEATHER-BLACK",
+			price: 499.0,
+			image: {
+				imageUrl: "/images/women-collection/image-03.jpg",
+				alt: "CONAN LEATHER-BLACK",
+				width: 300,
+				height: 400,
+				loading: "lazy",
+			},
+		},
+		{
+			id: "w4",
+			name: "CONAN LEATHER-BLACK",
+			brand: "CONAN LEATHER-BLACK",
+			price: 499.0,
+			image: {
+				imageUrl: "/images/women-collection/image-04.jpg",
+				alt: "CONAN LEATHER-BLACK",
+				width: 300,
+				height: 400,
+				loading: "lazy",
+			},
+		},
+	],
+} = Astro.props;
+
+// Helper function to format price
+const formatPrice = (price: number): string => {
+	return `EUR €${price.toFixed(2)}`;
+};
 ---
 
 <Layout title="Shopify Headless Store">
-  <h1>Welcome to the Store</h1>
-  <ProductList server:defer />
+	<div class="w-full">
+		<!-- Men's Clothing Hero Section -->
+		<section class="relative w-full h-[75vh] mb-4">
+			<div class="absolute inset-0 bg-black/40 z-10"></div>
+			<Image
+				src={menCollectionBGImage}
+				alt="Men's Clothing"
+				width={menCollectionBGImage.width}
+				height={menCollectionBGImage.height}
+				loading="lazy"
+				class="w-full h-full object-cover object-top"
+			/>
+			<div class="absolute inset-0 flex items-center justify-center z-20">
+				<h2 class="text-white text-3xl tracking-widest font-light">
+					M E N ' S &nbsp; C L O T H I N G
+				</h2>
+			</div>
+		</section>
+
+		<!-- Men's Product Grid -->
+		<section class="mb-16 px-4">
+			<div class="flex justify-between items-center mb-6">
+				<h3 class="text-sm uppercase">Men's Newest Arrivals</h3>
+				<a href="/collections/mens" class="text-sm uppercase">View Collection</a
+				>
+			</div>
+
+			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+				{
+					mensProducts.map((product) => (
+						<div class="product-card">
+							<a href={`/products/${product.id}`} class="block">
+								<div class="bg-gray-100 mb-3">
+									<Image
+										src={product.image.imageUrl}
+										alt={product.name}
+										width={product.image.width}
+										height={product.image.height}
+										class="w-full aspect-[3/4] object-cover object-center"
+									/>
+								</div>
+								<h4 class="text-xs uppercase mb-1">{product.brand}</h4>
+								<p class="text-xs">{formatPrice(product.price)}</p>
+							</a>
+						</div>
+					))
+				}
+			</div>
+		</section>
+
+		<!-- Women's Clothing Hero Section -->
+		<section class="relative w-full h-[75vh] mb-4">
+			<div class="absolute inset-0 bg-black/40 z-10"></div>
+			<Image
+				src={womenCollectionBGImage}
+				alt="Women's Clothing"
+				width={womenCollectionBGImage.width}
+				height={womenCollectionBGImage.height}
+				loading="lazy"
+				class="w-full h-full object-cover object-top"
+			/>
+			<div class="absolute inset-0 flex items-center justify-center z-20">
+				<h2 class="text-white text-3xl tracking-widest font-light">
+					W O M E N ' S &nbsp; C L O T H I N G
+				</h2>
+			</div>
+		</section>
+
+		<!-- Women's Product Grid -->
+		<section class="mb-16 px-4">
+			<div class="flex justify-between items-center mb-6">
+				<h3 class="text-sm uppercase">Women's Newest Arrivals</h3>
+				<a href="/collections/womens" class="text-sm uppercase"
+					>View Collection</a
+				>
+			</div>
+
+			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+				{
+					womensProducts.map((product) => (
+						<div class="product-card">
+							<a href={`/products/${product.id}`} class="block">
+								<div class="bg-gray-100 mb-3">
+									<Image
+										src={product.image.imageUrl}
+										alt={product.name}
+										width={product.image.width}
+										height={product.image.height}
+										class="w-full aspect-[3/4] object-cover object-center"
+									/>
+								</div>
+								<h4 class="text-xs uppercase mb-1">{product.brand}</h4>
+								<p class="text-xs">{formatPrice(product.price)}</p>
+							</a>
+						</div>
+					))
+				}
+			</div>
+		</section>
+
+		<!-- Jeans Category Banners -->
+		<section class="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 mb-16">
+			<!-- Women's Jeans Banner -->
+			<div class="relative h-[80vh]">
+				<Image
+					src={womensJeansBGImage}
+					alt="Women's Jeans"
+					width={womensJeansBGImage.width}
+					height={womensJeansBGImage.height}
+					loading="lazy"
+					class="w-full h-full object-cover"
+				/>
+				<div class="absolute inset-0 flex flex-col items-center justify-center">
+					<h3 class="text-white text-2xl uppercase tracking-widest mb-6">
+						Women's Jeans
+					</h3>
+					<a
+						href="/collections/womens-jeans"
+						class="bg-black text-white text-xs uppercase py-3 px-8 hover:bg-gray-800 transition-colors"
+					>
+						Explore
+					</a>
+				</div>
+			</div>
+
+			<!-- Men's Jeans Banner -->
+			<div class="relative h-[80vh]">
+				<Image
+					src={mensJeansBGImage}
+					alt="Men's Jeans"
+					width={mensJeansBGImage.width}
+					height={mensJeansBGImage.height}
+					loading="lazy"
+					class="w-full h-full object-cover"
+				/>
+				<div class="absolute inset-0 flex flex-col items-center justify-center">
+					<h3 class="text-white text-2xl uppercase tracking-widest mb-6">
+						Men's Jeans
+					</h3>
+					<a
+						href="/collections/mens-jeans"
+						class="bg-black text-white text-xs uppercase py-3 px-8 hover:bg-gray-800 transition-colors"
+					>
+						Explore
+					</a>
+				</div>
+			</div>
+		</section>
+	</div>
 </Layout>

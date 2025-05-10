@@ -1,0 +1,145 @@
+---
+// Footer.astro
+// TypeScript interface for the component props
+interface Props {
+	// You can add props here if needed for customization
+}
+---
+
+<footer class="bg-gray-100 py-12 px-6 md:px-12">
+	<div class="max-w-7xl mx-auto">
+		<!-- Main footer content -->
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+			<!-- Left column: Logo and subscription -->
+			<div>
+				<h1 class="text-6xl font-bold tracking-tighter mb-4">DÉLÉON</h1>
+
+				<div class="my-8">
+					<p class="text-sm font-medium uppercase mb-8">
+						Subscribe and get 10% off your first order
+					</p>
+
+					<form class="space-y-4">
+						<input
+							type="email"
+							placeholder="E-mail Address"
+							class="w-full p-3 border border-black bg-transparent text-sm"
+							required
+						/>
+
+						<div class="flex flex-wrap gap-8">
+							<label class="flex items-center space-x-2 cursor-pointer">
+								<input
+									type="checkbox"
+									class="w-4 h-4 border border-black"
+									name="womenswear"
+								/>
+								<span class="text-sm">Womenswear</span>
+							</label>
+
+							<label class="flex items-center space-x-2 cursor-pointer">
+								<input
+									type="checkbox"
+									class="w-4 h-4 border border-black"
+									name="menswear"
+								/>
+								<span class="text-sm">Menswear</span>
+							</label>
+						</div>
+
+						<label class="flex items-start space-x-2 cursor-pointer">
+							<input
+								type="checkbox"
+								class="w-4 h-4 border border-black mt-0.5"
+								name="agree"
+								required
+							/>
+							<span class="text-sm"
+								>I Agree, To Receive Emails From Déléon.</span
+							>
+						</label>
+
+						<button
+							type="submit"
+							class="w-full bg-black text-white py-3 uppercase text-sm font-medium hover:bg-gray-800 transition-colors"
+						>
+							Subscribe
+						</button>
+					</form>
+				</div>
+			</div>
+
+			<!-- Right column: Tagline and links -->
+			<div>
+				<div class="mb-12">
+					<p class="text-xl md:text-2xl font-medium uppercase leading-tight">
+						Effortless fashion that moves with you—crafted for confidence, built
+						for comfort.
+					</p>
+				</div>
+
+				<!-- Footer navigation links -->
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+					<!-- Column 1 -->
+					<div class="space-y-4">
+						<a href="/account" class="block text-sm uppercase hover:underline"
+							>Account</a
+						>
+						<a href="/b2b" class="block text-sm uppercase hover:underline"
+							>B2B</a
+						>
+						<a
+							href="/exchange-returns"
+							class="block text-sm uppercase hover:underline"
+							>Exchange & Returns</a
+						>
+						<a href="/instagram" class="block text-sm uppercase hover:underline"
+							>Instagram</a
+						>
+					</div>
+
+					<!-- Column 2 -->
+					<div class="space-y-4">
+						<a href="/about" class="block text-sm uppercase hover:underline"
+							>About</a
+						>
+						<a href="/gift-card" class="block text-sm uppercase hover:underline"
+							>Gift-Card</a
+						>
+						<a
+							href="/privacy-policy"
+							class="block text-sm uppercase hover:underline">Privacy Policy</a
+						>
+						<a href="/youtube" class="block text-sm uppercase hover:underline"
+							>YouTube</a
+						>
+					</div>
+
+					<!-- Column 3 -->
+					<div class="space-y-4">
+						<a href="/contact" class="block text-sm uppercase hover:underline"
+							>Contact</a
+						>
+						<a href="/faq" class="block text-sm uppercase hover:underline"
+							>FAQ</a
+						>
+						<a href="/terms" class="block text-sm uppercase hover:underline"
+							>Terms & Conditions</a
+						>
+						<a href="/facebook" class="block text-sm uppercase hover:underline"
+							>Facebook</a
+						>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Copyright bar -->
+		<div
+			class="flex flex-col md:flex-row md:justify-between pt-4 border-t border-gray-300 text-xs"
+		>
+			<p>COPYRIGHT 2025. DELEON CLOTHING CO. ALL RIGHTS RESERVED.</p>
+			<p>A PROJECT BY MILLE STUDIO.</p>
+		</div>
+	</div>
+</footer>

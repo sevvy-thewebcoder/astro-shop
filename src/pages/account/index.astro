@@ -1,0 +1,125 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCustomer } from "../../shopify/customer";
+
+// Check if user is logged in, redirect to login page if not
+const customerAccessToken = Astro.cookies.get("customerAccessToken")?.value;
+if (!customerAccessToken) {
+	return Astro.redirect("/account/login");
+}
+
+// Get customer information
+let customer;
+try {
+	customer = await getCustomer(customerAccessToken);
+} catch (error) {
+	// If token is invalid, clear it and redirect to login
+	Astro.cookies.delete("customerAccessToken");
+	return Astro.redirect(
+		"/account/login?error=Session expired. Please login again."
+	);
+}
+---
+
+<Layout title="My Account | Shopify Headless Store">
+	<div class="max-w-4xl mx-auto my-12 px-4">
+		<h1 class="text-3xl font-bold mb-8">My Account</h1>
+
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+			<!-- Sidebar -->
+			<div class="md:col-span-1">
+				<nav class="bg-white p-4 rounded shadow">
+					<ul class="space-y-2">
+						<li>
+							<a
+								href="/account"
+								class="block py-2 px-4 bg-gray-100 rounded text-gray-900 font-medium"
+								>Account Overview</a
+							>
+						</li>
+						<li>
+							<a
+								href="/account/orders"
+								class="block py-2 px-4 hover:bg-gray-100 rounded text-gray-700"
+								>Orders</a
+							>
+						</li>
+						<li>
+							<a
+								href="/account/addresses"
+								class="block py-2 px-4 hover:bg-gray-100 rounded text-gray-700"
+								>Addresses</a
+							>
+						</li>
+						<li>
+							<button
+								id="logout-button"
+								class="block w-full text-left py-2 px-4 hover:bg-gray-100 rounded text-gray-700"
+								>Logout</button
+							>
+						</li>
+					</ul>
+				</nav>
+			</div>
+
+			<!-- Main Content -->
+			<div class="md:col-span-2">
+				<div class="bg-white p-6 rounded shadow">
+					<h2 class="text-xl font-bold mb-4">Account Information</h2>
+
+					<div class="space-y-4">
+						<div>
+							<h3 class="font-medium text-gray-900">Contact Information</h3>
+							<p class="text-gray-600">
+								{customer.firstName}
+								{customer.lastName}<br />
+								{customer.email}<br />
+								{customer.phone || "No phone number provided"}
+							</p>
+						</div>
+					</div>
+
+					<div class="mt-6">
+						<a
+							href="/account/edit"
+							class="inline-block py-2 px-4 bg-gray-200 hover:bg-gray-300 rounded text-gray-800"
+						>
+							Edit Account Information
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<script>
+	import { logout } from "../../shopify/customer";
+
+	const logoutButton = document.getElementById("logout-button");
+
+	logoutButton?.addEventListener("click", async () => {
+		try {
+			const token = getCookie("customerAccessToken");
+			if (token) {
+				await logout(token);
+			}
+
+			// Clear cookie
+			document.cookie =
+				"customerAccessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+
+			// Redirect to login page
+			window.location.href = "/account/login";
+		} catch (error) {
+			console.error("Failed to logout:", error);
+		}
+	});
+
+	function getCookie(name: string) {
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if (parts.length === 2) return (parts.pop() ?? "").split(";").shift();
+		return null;
+	}
+</script>
